@@ -1,65 +1,103 @@
-# CSE558 Midterm Project: street lighting, motorcycles and crash severity
+# Lit roads, lighter crashes?
 
-Hypothesis tests on UK police-reported road accidents (`accident_data.csv`,
-670,679 rows × 14 columns, STATS19-derived Kaggle upload).
+**CSE558 Data Science · Midterm Project · Monsoon 2026 · Team Dark Horses**
 
-The outcome throughout is **KSI** (killed or seriously injured):
-`Accident_Severity` is Fatal or Serious.
+We use hypothesis tests on 670,679 UK road accidents to answer two questions:
 
-| Problem statement | Test | Script |
-|---|---|---|
-| PS1: is the KSI share of rural single-carriageway crashes in darkness higher with no street lighting than with lights lit? | Test 1: two-proportion z-test (+ chi-square, CMH by road surface) | `code/tests_ps1.py` |
-| | Test 2: paired t-test on per-district differences (+ Wilcoxon, sign test, unpaired Welch) | `code/tests_ps1.py` |
-| PS2: in two-vehicle crashes, are motorcycle crashes more often KSI but with fewer casualties than car crashes? | Test 3: two-proportion z-test (+ 3-level chi-square, relative risk) | `code/tests_ps2.py` |
-| | Test 4: Welch t-test on casualties per crash (+ Levene/F, pooled t, z, Mann-Whitney, Poisson check) | `code/tests_ps2.py` |
-| All four | Holm correction | `code/holm.py` |
+1. **Street lighting:** On rural single-carriageway roads at night, are crashes more severe when there are no street lights?
+2. **Motorcycles:** In two-vehicle crashes, are motorcycle crashes more severe than car crashes, but with fewer people hurt?
 
-## Layout
+"Severe" means **KSI** (killed or seriously injured), i.e. `Accident_Severity` is Fatal or Serious.
 
+Dataset: [Accident Analysis Dataset on Kaggle](https://www.kaggle.com/datasets/deeplumiere/accident-analysis-dataset)
+
+---
+
+## Results at a glance
+
+| Test | Question | Result | Decision |
+|---|---|---|---|
+| 1 | KSI share: unlit vs lit roads | Unlit is **+3.5 pp** higher (24.5% vs 21.0%) | Reject H₀ |
+| 2 | Same gap, checked district by district | Unlit is **+3.1 pp** higher on average (247 districts) | Reject H₀ |
+| 3 | KSI share: motorcycle vs car | No real difference (11.4% vs 11.5%) | Fail to reject H₀ |
+| 4 | Casualties per crash: motorcycle vs car | Motorcycles slightly fewer (1.36 vs 1.38) | Reject H₀ |
+
+All four decisions stay the same after the Holm correction for multiple testing.
+
+**In short:** unlit rural roads are linked to more severe crashes. Motorcycle crashes in this file are not more severe than car crashes.
+
+---
+
+## How to run
+
+**1. Install the packages** (Python 3.9 or newer):
+
+```bash
+pip install -r requirements.txt
 ```
-accident_data.csv        raw data (not committed: 93 MB; put it here)
-code/
-  stat_helpers.py        two-proportion z-test, CMH, Welch, Holm, JSON I/O
-  prepare.py             cleaning, encoding, size check  -> results/preparation.json
-  eda.py                 EDA aggregates                   -> results/eda.json, report/figdata/*.csv
-  tests_ps1.py           Tests 1 and 2                    -> results/ps1.json
-  tests_ps2.py           Tests 3 and 4                    -> results/ps2.json
-  holm.py                Holm correction                  -> results/holm.json
-  run_all.py             runs everything in order
-results/                 every number quoted in the report
-report/
-  CSE558_Project_Report.tex   the report (course template)
-  figdata/                    CSVs the report plots with pgfplots
-```
 
-## Running
+**2. Add the data.** Download `accident_data.csv` (93 MB) from Kaggle and put it in the project root. It is not in the repo because of its size.
 
-Needs Python 3.9+ with pandas, numpy and scipy (`pip install -r requirements.txt`).
+**3. Run everything:**
 
 ```bash
 python code/run_all.py
 ```
 
-The run takes under a minute. Each script can also be run on its own, but
-`holm.py` needs the JSON files from `tests_ps1.py` and `tests_ps2.py`.
+This takes under a minute. Every number in the report is saved to the `results/` folder.
+
+---
+
+## Project structure
+
+```
+accident_data.csv      the dataset (download it yourself)
+requirements.txt       Python packages
+code/
+  run_all.py           runs every step below, in order
+  prepare.py           cleans and encodes the data
+  eda.py               summary statistics and figure data
+  tests_ps1.py         Tests 1 and 2 (street lighting)
+  tests_ps2.py         Tests 3 and 4 (motorcycles)
+  holm.py              Holm correction across the four tests
+  stat_helpers.py      shared statistics functions
+results/               JSON output from each script
+report/
+  DSc_Project.pdf      the final report
+  figdata/             CSV data behind the report's figures
+```
+
+Each script can also run on its own. Run `tests_ps1.py` and `tests_ps2.py` before `holm.py`, because it reads their output.
+
+---
+
+## Data cleaning
+
+| Problem | What we did |
+|---|---|
+| 19 duplicate rows | Removed them |
+| Accident ID shown as `2.01E+07` in 239,884 rows | Did not use the ID as a key |
+| Dates are 12 years off from the ID year | Did not use the date in any test |
+| 6 district names lost the letters "na" (e.g. `Stevege`) | Fixed them; 422 districts became 416 |
+| Missing categories | Labelled as `Unknown` instead of guessing |
+| Very large casualty and vehicle counts | Kept them, since they are real crashes |
+
+After encoding, the data is 670,660 rows × 52 columns = **34.9 million cells**, which is above the 3 million required.
+
+---
 
 ## Building the report
 
-The figures are drawn by pgfplots from `report/figdata/*.csv`, so no plotting
-library is needed. Compile `report/CSE558_Project_Report.tex` twice with
-pdfLaTeX from inside `report/` (or upload the `report/` folder to Overleaf).
+The figures are drawn by LaTeX (pgfplots) from `report/figdata/*.csv`, so you don't need a plotting library. Compile `report/CSE558_Project_Report.tex` twice with pdfLaTeX, or upload the `report/` folder to Overleaf.
 
-## Data preparation, in short
+---
 
-* 19 exact duplicate rows dropped. The `Index` (accident ID) was mangled into
-  scientific notation (`2.01E+07`) for 239,884 rows, so it is not used as a key.
-* `Accident Date` is shifted: for every readable ID the date year is the ID year
-  plus 12. No test uses the date.
-* Six district names had lost the letters "na" (`Stevege`, `Blaeu Gwent`,
-  `North/South Larkshire`, `Clackmannshire`, `Crewe and ntwich`); 3,438 rows
-  were merged back, so 422 district levels become 416.
-* Missing categories become an explicit `Unknown` level rather than the mode,
-  so unknown road types or light levels never enter a test's filter.
-* Casualty and vehicle counts are kept as they are. Their IQR fence is degenerate
-  (Q1 = Q3 = 1 for casualties), and the large values are real crashes.
-* Encoded size: 670,660 rows × 52 columns = 34,874,320 cells (≥ 3M).
+## Team
+
+| Name | Roll no. | Contribution |
+|---|---|---|
+| Devan Goyal | 2023191 | Dataset, size check and data cleaning |
+| Harsh Garg | 2023228 | EDA, figures and problem statements |
+| Rushil Singha | 2023451 | Street lighting tests (Tests 1 and 2) |
+| Sanchit Maini | 2023480 | Motorcycle tests (Tests 3 and 4) |
+| Utkarsh Garg | 2023570 | Holm correction, limitations, README |
