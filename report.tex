@@ -114,10 +114,11 @@
 \begin{tabularx}{\linewidth}{@{}K{2.4cm} Y@{}}
 \toprule
 Group name & \eg{Dark Horses} \\
-Dataset & \eg{kaggle.com/datasets/deeplumiere/accident-analysis-dataset} \\
-Code & \eg{github.com/\dots/cse558-midterm} (Python scripts in \code{code/}, \code{README.md}, every reported number in \code{results/}) \\
+Dataset & \url{https://www.kaggle.com/datasets/deeplumiere/accident-analysis-dataset} \\
+Code & \url{https://github.com/UG570/Dsc_MidTerm_Project} (Code, Results and README) \\
 \bottomrule
 \end{tabularx}}
+
 
 \vspace{2pt}
 {\small
@@ -125,12 +126,11 @@ Code & \eg{github.com/\dots/cse558-midterm} (Python scripts in \code{code/}, \co
 \toprule
 \textbf{\#} & \textbf{Name} & \textbf{Roll no.} & \textbf{Institute email} & \textbf{Contribution} \\
 \midrule
-1 & \eg{Devan Goyal} & \eg{2023191} & \eg{devan23191@iiitd.ac.in} & \eg{} \\
-2 & \eg{Harsh Garg} & \eg{2023228} & \eg{harsh23228@iiitd.ac.in} & \eg{} \\
-3 & \eg{Rushil Singha} & \eg{2023451} & \eg{rushil23451@iiitd.ac.in} & \eg{} \\
-4 & \eg{Sanchit Maini} & \eg{2023480} & \eg{sanchit23480@iiitd.ac.in} & \eg{} \\
-5 & \eg{Utkarsh Garg} & \eg{2023570} & \eg{utkarsh23570@iiitd.ac.in} & \eg{} \\
-
+1 & \eg{Devan Goyal} & \eg{2023191} & \eg{devan23191@iiitd.ac.in} & \eg{Dataset, size check and data cleaning (1, 2, 3)} \\
+2 & \eg{Harsh Garg} & \eg{2023228} & \eg{harsh23228@iiitd.ac.in} & \eg{EDA, figures and problem statements (4)} \\
+3 & \eg{Rushil Singha} & \eg{2023451} & \eg{rushil23451@iiitd.ac.in} & \eg{Street lighting tests, Tests 1 and 2 (5)} \\
+4 & \eg{Sanchit Maini} & \eg{2023480} & \eg{sanchit23480@iiitd.ac.in} & \eg{Motorcycle tests, Tests 3 and 4 (5)} \\
+5 & \eg{Utkarsh Garg} & \eg{2023570} & \eg{utkarsh23570@iiitd.ac.in} & \eg{Holm correction, limitations, code and README (5, 6)} \\
 \bottomrule
 \end{tabularx}}
 \vspace{12pt}
@@ -700,14 +700,11 @@ and interpretation, but use the same data and are not independent confirmations 
   PS2 cannot be adjusted for speed either.
   \item \textbf{Association, not cause.} Lights are not placed at random: they go on junctions
   and built-up stretches. Only a before-and-after study of newly lit roads could show cause.
-  \item \textbf{Injury crashes only.} STATS19 records crashes with at least one injury that were
-  reported to police, so the KSI share is a share of injury crashes, and slight injuries are
+  \item \textbf{Injury crashes only.} Crashes with at least one injury are
+  reported to police, so the KSI share is a share of injury crashes, and slight injuries might be
   under-reported.
-  \item \textbf{Districts kept.} Test 2 uses 247 of 396 districts; the 149 with fewer than 20
-  crashes in a group are left out, and the result may not apply to them.
-  \item \textbf{Shifted dates.} Without usable dates we cannot check seasonal confounding (dark
-  evenings in winter coincide with wet roads); the CMH check by road surface covers only part of
-  this.
+  \item \textbf{Shifted dates in the dataset} Without reliable dates we cannot check seasonal correlation (dark
+  evenings in winter coincide with wet roads).
 \end{itemize}
 
 \end{document}
