@@ -1,0 +1,713 @@
+%=======================================================================
+%  CSE558 Data Science - Midterm Project Report
+%  Monsoon 2026, IIIT-Delhi
+%
+%  Built on the course template. Text in LIGHT BLUE (\eg{...}) is still a
+%  placeholder: team names, roll numbers, emails and the two links.
+%  Every number comes from results/*.json, produced by code/run_all.py.
+%  Figures are drawn by pgfplots from figdata/*.csv.
+%  Compile with pdfLaTeX, twice.
+%=======================================================================
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+%========================= EDIT THIS =========================
+% Your project title: it sets the heading AND the PDF's title.
+\newcommand{\projecttitle}{Lit roads, lighter crashes? Street lighting,
+  motorcycles and crash severity in accident records}
+\newif\ifshowhints
+\showhintsfalse     % \showhintsfalse hides every grey instruction line
+%=============================================================
+
+%-------------------------------------------- fonts (no need to edit)
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \IfFileExists{carlito.sty}%
+    {\usepackage[sfdefault]{carlito}}%              Calibri look
+    {\usepackage[scaled=0.92]{helvet}\renewcommand{\familydefault}{\sfdefault}}%
+  \usepackage{courier}
+\else
+  \usepackage[no-math]{fontspec}
+  \setmainfont{Carlito}[Extension=.ttf, UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+\fi
+
+%----------------------------------------------------------- packages
+\usepackage[margin=18mm,bottom=20mm,columnsep=7mm]{geometry}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{needspace}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18, table/col sep=comma}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={\projecttitle},
+            pdfsubject={CSE558 Data Science, Monsoon 2026: Midterm Project Report}}
+
+%------------------------------------------------------------- layout
+\definecolor{eg}{HTML}{7396C4}         % worked example (light blue)
+\definecolor{hintgrey}{gray}{0.58}     % instructions (light grey)
+\definecolor{cA}{HTML}{2F5D8C}         % plot colour 1
+\definecolor{cB}{HTML}{D9822B}         % plot colour 2
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{12pt}{3pt}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{10pt}{2pt}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\subsubsection}{0pt}{8pt}{2pt}
+\newcommand{\sectionbreak}{\Needspace{10\baselineskip}}
+\newcommand{\subsectionbreak}{\Needspace{16\baselineskip}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\raggedbottom
+\widowpenalty=10000
+\setlist{leftmargin=1.2em, itemsep=2pt, topsep=2pt, parsep=0pt}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{4pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{K}[1]{>{\raggedright\arraybackslash\bfseries\boldmath}p{#1}}  % bold labels
+
+%--------------------------------------------------------- shorthands
+\newcommand{\hint}[1]{\ifshowhints{\footnotesize\itshape\color{hintgrey}#1\par}\fi}
+\newcommand{\eg}[1]{\textcolor{eg}{#1}}
+\newcommand{\egblock}[1]{{\color{eg}#1\par}}
+\newcommand{\field}[2]{\textbf{#1}~#2\par}
+\newcommand{\tpart}[2]{\par\Needspace{12\baselineskip}\smallskip\textbf{#1)~#2}\par}
+\newcommand{\minihead}[1]{\par\Needspace{8\baselineskip}\smallskip\textbf{#1}\par}
+\newcommand{\brkus}{\textunderscore\allowbreak}
+\newcommand{\code}[1]{{\ttfamily\let\_\brkus #1}}   % may break after _
+\newcommand{\pp}{\,pp}
+\newcommand{\figfile}[2]{%
+  \IfFileExists{#1}%
+    {\includegraphics[width=\linewidth,height=#2,keepaspectratio]{#1}}%
+    {\fbox{\parbox[c][#2][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}%
+      {\centering\small\itshape\color{hintgrey}Your plot: \detokenize{#1}}}}}
+
+% shared look for every plot
+\pgfplotsset{every axis/.append style={
+  width=\linewidth, font=\footnotesize, axis lines*=left,
+  tick style={draw=none}, ymajorgrids, grid style={gray!25},
+  legend style={draw=none, font=\footnotesize, fill=none},
+  every axis label/.append style={font=\footnotesize}}}
+
+%=======================================================================
+\begin{document}
+
+\twocolumn[%
+{\small\bfseries CSE558 Data Science\ \ \textbullet\ \ Midterm Project Report\ \ \textbullet\ \ Monsoon 2026\par}
+\vspace{4pt}
+{\LARGE\bfseries\raggedright\projecttitle\par}
+\vspace{6pt}
+\rule{\linewidth}{1pt}
+
+{\small
+\begin{tabularx}{\linewidth}{@{}K{2.4cm} Y@{}}
+\toprule
+Group name & \eg{Dark Horses} \\
+Dataset & \eg{kaggle.com/datasets/deeplumiere/accident-analysis-dataset} \\
+Code & \eg{github.com/\dots/cse558-midterm} (Python scripts in \code{code/}, \code{README.md}, every reported number in \code{results/}) \\
+\bottomrule
+\end{tabularx}}
+
+\vspace{2pt}
+{\small
+\begin{tabularx}{\linewidth}{@{}L{0.5cm} L{3.4cm} L{2.3cm} L{4.8cm} Y@{}}
+\toprule
+\textbf{\#} & \textbf{Name} & \textbf{Roll no.} & \textbf{Institute email} & \textbf{Contribution} \\
+\midrule
+1 & \eg{Devan Goyal} & \eg{2023191} & \eg{devan23191@iiitd.ac.in} & \eg{} \\
+2 & \eg{Harsh Garg} & \eg{2023228} & \eg{harsh23228@iiitd.ac.in} & \eg{} \\
+3 & \eg{Rushil Singha} & \eg{2023451} & \eg{rushil23451@iiitd.ac.in} & \eg{} \\
+4 & \eg{Sanchit Maini} & \eg{2023480} & \eg{sanchit23480@iiitd.ac.in} & \eg{} \\
+5 & \eg{Utkarsh Garg} & \eg{2023570} & \eg{utkarsh23570@iiitd.ac.in} & \eg{} \\
+
+\bottomrule
+\end{tabularx}}
+\vspace{12pt}
+]
+
+%-----------------------------------------------------------------------
+\section{Dataset}
+
+\field{Source:}{Kaggle: Downloaded CSV dataset on 25th October 2026. The dataset contains records of road accidents that took place in the UK between 2019 and 2025. Each row is one accident, and the columns describe additional information about the conditions at the time of accident. }
+
+\field{What is raw about it:}{the accident ID was turned into scientific notation
+(\code{2.01E+07}) for 239{,}884 rows, which creates 239{,}659 false duplicate IDs; for every
+readable 2007--2010 ID the date is exactly 12 years later than the ID year; six district names lost the letters ``na''
+(\code{Stevege} for Stevenage); 19{,}739 cells are missing; and Fatal is only 1.3\% of rows.}
+
+{\small
+\begin{tabularx}{\linewidth}{@{}L{3.0cm} Y Y@{}}
+\toprule
+ & \textbf{Raw file} & \textbf{After encoding} \\
+\midrule
+Instances (rows) & 670{,}679 & 670{,}660 \\
+Attributes (columns) & 14 & 52 \\
+Instances $\times$ attributes & 9{,}389{,}506 & 34{,}874{,}320 \\
+\bottomrule
+\end{tabularx}}
+
+\field{Size check:}{$670{,}660\times52=34{,}874{,}320\ge3{,}000{,}000$, so the requirement is
+met (the raw file alone gives $670{,}679\times14=9{,}389{,}506$). The 52 columns are 4 numeric,
+severity as an ordinal, the KSI flag, district frequency, and 45 one-hot columns: light 5, road
+surface 6, road type 6, urban/rural 3, weather 9, vehicle type 16.}
+\newpage
+\minihead{Key features}
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.5cm} L{1.4cm} Y@{}}
+\toprule
+\textbf{Feature} & \textbf{Type} & \textbf{Real-world meaning} \\
+\midrule
+\code{Accident\_Severity} & ordinal &Slight, Serious or Fatal. \\
+\code{Light\_Conditions} & nominal & daylight, or darkness with lights lit, unlit, none or
+unknown \\
+\code{Urban\_or\_Rural\_Area} & nominal & urban or rural location \\
+\code{Road\_Type} & nominal & single or dual carriageway, roundabout, one-way, slip road \\
+\code{Road\_Surface\_Conditions} & nominal & dry, wet, frost/ice, snow, flood \\
+\code{Vehicle\_Type} & nominal & vehicle recorded for the crash, 15 types \\
+\code{Number\_of\_Casualties} & discrete & people injured, 1 to 68 \\
+\code{Number\_of\_Vehicles} & discrete & vehicles involved, 1 to 32 \\
+\code{District Area} & nominal & local-authority district, 416 levels after cleaning \\
+\bottomrule
+\end{tabularx}}
+
+%-----------------------------------------------------------------------
+\section{Data preparation}
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{1.9cm} L{2.5cm} Y@{}}
+\toprule
+\textbf{Issue found} & \textbf{What we did} & \textbf{Why, and not the alternative} \\
+\midrule
+19 exact duplicate rows
+ & dropped
+ & the same crash counted twice would add weight to it in every test \\
+ID in scientific notation for 239{,}884 rows
+ & kept the ID out of every key and every test
+ & de-duplicating on the ID would have deleted 239{,}659 distinct crashes \\
+dates 12 years ahead of the ID year (all 420{,}776 readable older IDs)
+ & date not used, and dropped from the encoding
+ & no test needs time; shifting back would require guessing for the IDs that are unreadable \\
+6 district names missing ``na'' (3{,}438 rows)
+ & merged back: like \code{Stevege} $\to$ Stevenage
+ & Test 2 pairs crashes within districts; a split district halves its counts and adds a fake
+ one \\
+missing categories: weather 14{,}351, road type 4{,}580, surface 742, urban/rural 26, vehicle 7
+ & recoded to an explicit \code{Unknown} level
+ & filling with the mode would push 4{,}580 unknown road types into ``single carriageway'',
+ which is PS1's filter; \code{Unknown} rows simply fall out of each filter \\
+51 missing coordinates
+ & kept as missing
+ & coordinates are not used \\
+casualty outliers: IQR fence is $Q_3+1.5\,\mathrm{IQR}=1$
+ & kept all values (max 68)
+ & a fence at 1 would flag all 158{,}994 multi-casualty crashes; they are real (e.g.\ bus
+ crashes). Test 4 is re-run without the 67 crashes above 10 casualties \\
+vehicles above fence 3.5 (15{,}310)
+ & kept
+ & real pile-ups; PS2 fixes \code{Number\_of\_Vehicles}$\,=2$ anyway \\
+6 nominal columns
+ & one-hot (45 columns); severity ordinal $0/1/2$ plus a KSI flag
+ & categories have no order; KSI is the response \\
+district, 416 levels
+ & frequency-encoded
+ & one-hot would add 415 sparse columns; the raw label is kept for Test 2 \\
+\bottomrule
+\end{tabularx}}
+
+%-----------------------------------------------------------------------
+\section{What changed after preparation}
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.9cm} L{1.7cm} Y@{}}
+\toprule
+\textbf{Measure} & \textbf{Before} & \textbf{After} \\
+\midrule
+Rows & 670{,}679 & 670{,}660 \\
+Attributes & 14 & 52 (encoded) \\
+Missing cells & 19{,}739 & 0 in the columns we use; 51 coordinates left, unused \\
+Duplicate rows & 19 & 0 \\
+Duplicate IDs & 239{,}659 & ID no longer used as a key \\
+District levels & 422 & 416 (6 typo levels merged) \\
+Usable dates & 0 (shifted) & dropped \\
+KSI share & 14.67\% & 14.67\% (unchanged) \\
+\bottomrule
+\end{tabularx}}
+
+Turning severity into the binary KSI (Killed or Seriously Injured) flag is what makes the proportion tests possible. Merging
+the district typos moved 3{,}438 crashes back to their real district, which changes the
+district-level pairs in Test 2. Only 19 rows were lost, so no group we test was thinned out by
+cleaning.
+
+%-----------------------------------------------------------------------
+\section{Basic questions and problem statement}
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, height=3.9cm, bar width=7pt, ymin=0, ymax=25,
+  ylabel={KSI share (\%)},
+  xtick=data, xticklabels from table={figdata/ksi_by_light.csv}{light},
+  enlarge x limits=0.13,
+  legend style={at={(0.5,1.03)}, anchor=south}, legend columns=2]
+\addplot[fill=cA, draw=none] table[x expr=\coordindex, y=Rural, col sep=comma]{figdata/ksi_by_light.csv};
+\addplot[fill=cB, draw=none] table[x expr=\coordindex, y=Urban, col sep=comma]{figdata/ksi_by_light.csv};
+\legend{Rural, Urban}
+\end{axis}
+\end{tikzpicture}
+\caption{KSI share by light condition (all except Daylight are in darkness). Rural crashes on
+unlit roads are the most severe group: 23.8\% KSI against 17.9\% where lights are lit.}
+\label{fig:light}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[xbar, width=0.82\linewidth, height=3.7cm, bar width=6pt, xmin=0, xmax=0.15,
+  xlabel={Cram\'er's $V$ with KSI},
+  ytick=data, yticklabels from table={figdata/cramers_v_ksi.csv}{column},
+  enlarge y limits=0.1, xmajorgrids, ymajorgrids=false,
+  scaled x ticks=false, xticklabel style={/pgf/number format/fixed},
+  nodes near coords, nodes near coords style={font=\tiny, /pgf/number format/fixed,
+    /pgf/number format/precision=3}]
+\addplot[fill=cA, draw=none] table[y expr=\coordindex, x=v, col sep=comma]{figdata/cramers_v_ksi.csv};
+\end{axis}
+\end{tikzpicture}
+\caption{How strongly each column is associated with KSI. Vehicle type is the weakest by far
+($V=0.005$), 13 times weaker than light conditions. This warns us before PS2 is tested.}
+\label{fig:cramer}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, height=3.5cm, bar width=8pt, ymin=0, ymax=85,
+  ylabel={\% of crashes}, xlabel={casualties per crash (two-vehicle crashes)},
+  xtick=data,
+  xticklabels from table={figdata/casualty_dist.csv}{casualties},
+  enlarge x limits=0.15, legend pos=north east]
+\addplot[fill=cA, draw=none] table[x expr=\coordindex, y=Motorcycle, col sep=comma]{figdata/casualty_dist.csv};
+\addplot[fill=cB, draw=none] table[x expr=\coordindex, y=Car, col sep=comma]{figdata/casualty_dist.csv};
+\legend{Motorcycle, Car}
+\end{axis}
+\end{tikzpicture}
+\caption{Casualties per crash are almost identical for motorcycles and cars: about 74\% of
+crashes hurt exactly one person, and the counts are heavily right-skewed (skewness 7.0 over all
+crashes).}
+\label{fig:cas}
+\end{figure}
+
+\minihead{Basic questions}
+\begin{enumerate}[label=\arabic*.]
+  \item Which vehicle type is in the most crashes? Cars and taxis, in 77.4\% of them.
+  \item Are rural crashes more severe than urban ones? Yes: 18.0\% KSI against 12.8\%.
+  \item Are crashes in the dark more severe than in daylight? Yes, in both areas
+  (Figure~\ref{fig:light}).
+  \item Does bad weather make crashes worse? No: snowfall (9.7\%) and icy roads (11.9\%) have
+  \emph{lower} KSI shares than dry roads (15.1\%), probably because people drive slower.
+\end{enumerate}
+
+\newpage
+\minihead{Our problem statements}
+
+\noindent\fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+\textbf{PS1 (primary).} Among rural single-carriageway crashes in darkness, is the KSI share
+higher where there is no street lighting than where lights are lit? Councils pay to light rural
+roads; if unlit crashes are no more severe, that spend is hard to justify on severity grounds.
+
+\smallskip
+\textbf{PS2.} In two-vehicle crashes, are motorcycle crashes more often KSI, while hurting
+\emph{fewer} people per crash, than car crashes? If so, budgets split by casualty counts would
+understate motorcycle safety.
+\end{minipage}}
+
+\field{How they are novel:}{the basic questions compare one column against severity. PS1
+compares two \emph{darkness} groups on the same road type, so darkness itself is held fixed and
+only the lighting differs; it then checks the result within districts. PS2 asks two questions
+about the same groups, one on severity and one on casualty count, which could point in opposite
+directions. A plain ``which vehicle has the most crashes'' cannot show that.}
+
+%-----------------------------------------------------------------------
+\section{Statistical inferences}
+
+\field{Rows tested, PS1:}{170{,}583 rural single-carriageway crashes, of which 28{,}201 were in
+darkness with no lighting ($N$) and 14{,}382 in darkness with lights lit ($L$). Excluded:
+``lights unlit'' (608) and ``lighting unknown'' (1{,}683), whose lighting status is unclear,
+and daylight.}
+
+\field{Rows tested, PS2:}{397{,}950 two-vehicle crashes, of which 34{,}017 are motorcycles of
+any engine size ($M$) and 307{,}722 are cars or taxis ($C$). Other vehicles are excluded.}
+
+%------------------------------------------------------------ Test 1
+\subsection*{Test 1 (PS1): is the KSI share higher on unlit rural roads at night?}
+
+\tpart{a}{Hypotheses, written before running the test}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & $p_N-p_L\le0$ \\
+$H_1$ & $p_N-p_L>0$ \\
+Significance level & $\alpha=0.05$ \\
+Side & one-sided (right) \\
+Test & two-proportion $z$-test (pooled SE for $z$, unpooled SE for the CI) \\
+Smallest difference that matters & 2 percentage points \\
+\bottomrule
+\end{tabularx}}
+
+$p_N$, $p_L$: KSI share of crashes on unlit and lit roads. One-sided, because the claim is that
+no lighting is worse. 2\pp\ means 20 more KSI crashes per 1{,}000 rural night crashes. That is roughly where the cost of a lighting scheme becomes worth discussing.
+
+\tpart{b}{Other tests we considered}
+Two independent groups and a binary outcome, with expected cell counts in the thousands, call
+for a large-sample test on the difference of two proportions.
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Chi-square, $2\times2$ & identical evidence ($\chi^2=65.32=z^2$, $p=6.4\times10^{-16}$
+two-sided) but two-sided only, and it gives no CI for the difference \\
+Fisher's exact test & needed only for small expected counts; our smallest is 3{,}348 \\
+CMH test by road surface & valid and stricter, since wet nights could confound. Run as a
+robustness check (below) \\
+Logistic regression & adjusts for many confounders at once, but it is a model rather than one
+of our tests; left as an extension \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+\subsubsection*{Decision}
+We \textbf{reject $H_0$} at the 5\% level. The data support a higher KSI share among unlit
+than lit rural single-carriageway crashes at night.
+
+\subsubsection*{Estimate and uncertainty}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & $+3.50$\pp\ (24.46\% unlit, 20.96\% lit) \\
+95\% confidence interval & $+2.67$ to $+4.33$\pp \\
+Test statistic (d.f.) & $z=8.08$ (normal; $\chi^2$ form has 1 d.f.) \\
+p-value & $3.2\times10^{-16}$ \\
+\bottomrule
+\end{tabularx}}
+
+\subsubsection*{What this tells us}
+The gap is about \textbf{35 more KSI crashes per 1{,}000 recorded crashes} in the unlit group.
+It concerns the severity of an injury crash, not the chance of having a crash or the number
+of people killed or seriously injured. The odds ratio of 1.22 means 22\% higher \emph{odds}.
+
+\subsubsection*{Does the difference matter?}
+Yes, by our chosen 2\pp\ threshold: the whole 95\% CI, $+2.67$ to $+4.33$\pp, is above it.
+This is evidence of a very important association between lights and Severity of the accidents.
+Although it still does not conclusively show that installing lights would remove the gap; speed limits and road layout
+could explain part of it.
+
+\subsubsection*{Check: comparing the same road surfaces}
+\textbf{Cochran--Mantel--Haenszel (CMH) test.} This compares lit and unlit crashes within each
+road-surface category and combines the evidence. Its $z=9.61$ and $p=3.7\times10^{-22}$
+support an association even after accounting for the different surface mixes.
+
+\textbf{Mantel--Haenszel risk difference.} This is a weighted average of the KSI-share gaps
+within the surface categories. The estimate of $+4.18$\pp\ shows that the gap remains positive
+when comparisons are made within road surfaces, rather than only across all crashes.
+
+%------------------------------------------------------------ Test 2
+\subsection*{Test 2 (PS1): does the gap hold within districts?}
+
+Test~1 treats every crash as independent, but crashes in one district share roads, policing and
+reporting habits. Here each district is its own control: for every district with at least 20
+crashes in \emph{both} groups we take $d_i=\text{KSI}_N-\text{KSI}_L$.
+
+\tpart{a}{Hypotheses, written before running the test}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & $\mu_d\le0$ \\
+$H_1$ & $\mu_d>0$ \\
+Significance level & $\alpha=0.05$ \\
+Side & one-sided (right) \\
+Test & paired $t$-test on the district differences $d_i$ \\
+Smallest difference that matters & 2 percentage points \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{b}{Other tests we considered}
+Each district gives a pair of shares, so the test should use the within-district difference.
+Skewness is 0.10, and the Shapiro--Wilk normality check finds no strong departure from normality
+($p=0.72$). This supports using the $t$-test, but does not prove the differences are normal.
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Wilcoxon signed-rank & uses ranks of paired differences rather than their mean; assumes
+symmetry. Run alongside: $W=20{,}981$, $p=2.3\times10^{-7}$ \\
+Sign test & valid, but uses only the sign of each $d_i$, so it has less power: 158 of 247
+positive, $p=6.7\times10^{-6}$ \\
+Unpaired Welch $t$-test & ignores the pairing and leaves district-to-district variation in the
+error: $t=4.80$, $p=1.1\times10^{-6}$, weaker than the paired $t=5.57$ because the two shares
+are correlated across districts ($r=0.26$) \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+\subsubsection*{Decision}
+We \textbf{reject $H_0$} at the 5\% level. The average within-district KSI-share difference is
+positive among the districts that meet our sample-size rule.
+
+\subsubsection*{Estimate and uncertainty}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & mean $d=+3.08$\pp\ (median $+2.93$\pp; 247 of 396 districts, 37{,}189 crashes) \\
+95\% confidence interval & $+1.99$ to $+4.16$\pp \\
+Test statistic (d.f.) & $t=5.57$ (246) \\
+p-value & $3.3\times10^{-8}$ \\
+\bottomrule
+\end{tabularx}}
+
+\begin{minipage}{\linewidth}
+\captionsetup{type=figure}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, height=3.4cm, bar width=4.4, ymin=0,
+  xlabel={$d_i$ = KSI share unlit $-$ lit (pp)}, ylabel={districts},
+  xmin=-25, xmax=30, xtick={-20,-10,0,10,20}]
+\addplot[fill=cA, draw=none] table[x=mid, y=count, col sep=comma]{figdata/district_diff_hist.csv};
+\draw[cB, very thick] (axis cs:3.08,0) -- (axis cs:3.08,60);
+\end{axis}
+\end{tikzpicture}
+\caption{Test 2: KSI-share differences across 247 districts. The orange line marks the mean,
+$+3.08$\pp; the spread shows that the gap varies across districts.}
+\label{fig:dist}
+\end{minipage}
+
+\subsubsection*{What this tells us}
+Each district has equal weight here, unlike Test~1, where each crash has equal weight.
+The $+3.08$\pp\ average therefore describes a district-level difference, not another estimate
+of exactly the same pooled quantity.
+
+Of the 247 districts, \textbf{158 (64\%) have a positive gap} and 89 have a negative gap.
+The SD of 8.7\pp\ shows substantial variation: the overall finding is not true in every district.
+
+\subsubsection*{Does the difference matter?}
+The estimate exceeds 2\pp, but the CI starts at 1.99\pp, just below the threshold.
+We have clear evidence of a positive average gap, but cannot confidently say the district-level
+gap exceeds our practical threshold.
+
+\subsubsection*{Checks: is the finding tied to the $t$-test?}
+\textbf{Sign test.} This counts only whether each district's difference is positive or negative,
+ignoring its size. With 158 of 247 positive and $p=6.7\times10^{-6}$, it supports a positive gap
+in more than half of the qualifying districts.
+
+\textbf{Pairing and scope.} The paired test is more precise than the unpaired comparison here
+($t=5.57$ vs 4.80), consistent with the positive correlation between each district's two shares.
+These checks use the same data, not independent replications, and the conclusions exclude
+the 149 districts that do not meet the minimum counts.
+
+%------------------------------------------------------------ Test 3
+\subsection*{Test 3 (PS2): are motorcycle crashes more often KSI?}
+
+\tpart{a}{Hypotheses, written before running the test}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & $p_M-p_C\le0$ \\
+$H_1$ & $p_M-p_C>0$ \\
+Significance level & $\alpha=0.05$ \\
+Side & one-sided (right) \\
+Test & two-proportion $z$-test \\
+Smallest difference that matters & 5 percentage points \\
+\bottomrule
+\end{tabularx}}
+
+$p_M$, $p_C$: KSI share of two-vehicle crashes recorded with a motorcycle or a car. A gap below
+5\pp\ would not justify a separate motorcycle-safety budget line.
+
+\tpart{b}{Other tests we considered}
+Again two independent groups and a binary outcome with large counts.
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Chi-square, severity (3 levels) $\times$ group & valid, but tests any difference in the severity
+mix, not our directional KSI question. Supporting run: $\chi^2=1.65$ (2 d.f.), $p=0.44$ \\
+Fisher's exact test & counts are far too large to need it (smallest expected count 301) \\
+Relative risk with CI & useful alongside, but our threshold is an absolute difference:
+$\text{RR}=0.986$ (0.956 to 1.017) \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+\subsubsection*{Decision}
+We \textbf{fail to reject $H_0$} at the 5\% level. This test does not support the claim that
+motorcycle-labelled crashes are more often KSI than car-labelled crashes.
+It does not prove that the two proportions are exactly equal.
+
+\subsubsection*{Estimate and uncertainty}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & $-0.16$\pp\ (11.36\% motorcycle, 11.52\% car) \\
+95\% confidence interval & $-0.52$ to $+0.19$\pp \\
+Test statistic (d.f.) & $z=-0.89$ (normal) \\
+p-value & 0.81 \\
+\bottomrule
+\end{tabularx}}
+
+\subsubsection*{What this tells us}
+The estimated motorcycle-minus-car difference is slightly negative, but its CI includes zero.
+Both a small decrease and a small increase are compatible with these data.
+We therefore cannot claim that either group has a higher KSI share from this comparison.
+
+\subsubsection*{Does the difference matter?}
+The CI runs from $-0.52$ to $+0.19$\pp, far below the proposed $+5$\pp\ increase.
+Under the test assumptions, the data rule out an increase of that size: a precise
+negative finding for our proposed effect.
+
+\subsubsection*{Checks: severity levels and relative risk}
+\textbf{Three-level chi-square.} This keeps Fatal, Serious and Slight separate, so it can find
+differences hidden by combining Fatal and Serious into KSI. Its $\chi^2=1.65$ (2 d.f.),
+$p=0.44$, also gives no evidence of a different severity mix; expected counts are adequate.
+
+\textbf{Relative risk.} This divides the motorcycle KSI proportion by the car proportion;
+a ratio of 1 means equal proportions. The estimate is 0.986 with a CI of 0.956 to 1.017,
+which includes 1 and agrees with the small absolute difference.
+
+%------------------------------------------------------------ Test 4
+\subsection*{Test 4 (PS2): do motorcycle crashes hurt fewer people?}
+
+\tpart{a}{Hypotheses, written before running the test}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+$H_0$ & $\mu_M-\mu_C\ge0$ \\
+$H_1$ & $\mu_M-\mu_C<0$ \\
+Significance level & $\alpha=0.05$ \\
+Side & one-sided (left) \\
+Test & Welch $t$-test (unequal variances) \\
+Smallest difference that matters & 0.10 casualties per crash \\
+\bottomrule
+\end{tabularx}}
+
+$\mu_M$, $\mu_C$: mean casualties per two-vehicle crash. 0.10 means 10 fewer injured people per
+100 crashes, enough to change ambulance and hospital load.
+
+\tpart{b}{Other tests we considered}
+Two independent groups and a mean of counts. With $n$ in the tens of thousands, the CLT makes
+the sample means normal despite the skew (Figure~\ref{fig:cas}), and $\sigma$ is unknown, so we
+use a two-sample $t$-test. We chose Welch's version because the spreads differ.
+
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}L{2.4cm} Y@{}}
+\toprule
+\textbf{Also considered} & \textbf{Why we did not use it} \\
+\midrule
+Pooled $t$-test & assumes equal variances, rejected by Levene ($W=11.0$, $p=0.0009$) and by the
+$F$-test ($F=0.93$, $p=10^{-17}$). Run anyway: $t=-3.32$, $p=0.0005$, same decision \\
+Two-sample $z$-test & needs the population $\sigma$; at this $n$ it gives the same $z=-3.41$,
+$p=0.0003$ \\
+Mann--Whitney $U$ & 74\% of values are tied at 1, and it tests a shift in distribution, not the
+mean. Robustness run: $p=0.001$, $P(M>C)+\tfrac12P(\text{tie})=0.496$, practically a coin
+flip \\
+Poisson rate test & casualties start at 1, and their variance is \emph{below} the mean
+(var/mean $=0.44$ for $M$, $0.47$ for $C$); shifted to start at 0 they are overdispersed (1.65,
+1.70). Either way the Poisson variance is wrong; it gives $p=0.012$ \\
+\bottomrule
+\end{tabularx}}
+
+\tpart{c}{Result}
+\subsubsection*{Decision}
+We \textbf{reject $H_0$} at the 5\% level. Motorcycle-labelled two-vehicle crashes have a
+lower mean casualty count than car-labelled crashes in this file.
+
+\subsubsection*{Estimate and uncertainty}
+{\small
+\begin{tabularx}{\linewidth}{@{}K{3.4cm} Y@{}}
+\toprule
+Estimate & $-0.015$ casualties per crash (1.362 motorcycle, 1.377 car) \\
+95\% confidence interval & $-0.024$ to $-0.006$ \\
+Test statistic (d.f.) & $t=-3.41$ (42{,}493) \\
+p-value & $3.2\times10^{-4}$ \\
+\bottomrule
+\end{tabularx}}
+
+\subsubsection*{What this tells us}
+The gap is about \textbf{1.5 fewer casualties per 100 recorded crashes}, with a CI of about
+0.6 to 2.4 fewer. This is a difference in the total people injured per crash.
+
+\subsubsection*{Does the difference matter?}
+Not by our chosen standard of 0.10 casualties per crash, or 10 per 100 crashes.
+The whole CI is much closer to zero than that threshold.
+With 341{,}739 crashes, a small difference can be statistically detectable without being
+practically important; rejecting $H_0$ is not enough on its own.
+
+\subsubsection*{Checks: variance and distribution}
+\textbf{Levene's test.} This checks whether the groups have equal spreads.
+Its $p=0.0009$ supports unequal variances, reinforcing the use of Welch rather than the
+equal-variance pooled test; the classical $F$-test is less reliable for these skewed counts.
+
+\textbf{High-casualty sensitivity check.} Removing the 67 crashes with more than 10 casualties
+leaves a difference of $-0.0146$ and $p=3.3\times10^{-4}$, close to the original result.
+The small gap is therefore not driven only by the most extreme counts.
+
+\subsubsection*{What do Tests 3 and 4 say together?}
+The proposed contrast in PS2 does not appear: motorcycle-labelled crashes show no evidence
+of a higher KSI share, and their lower casualty count is too small to meet our practical
+threshold. These are findings about recorded crash labels, not proof that motorcycles are safe.
+
+\subsubsection*{Check: four primary tests at once}
+Holm correction controls the chance of at least one false rejection across the four primary
+tests at 5\%, provided their p-values are valid. It makes the evidence threshold stricter
+without requiring the tests to be independent.
+
+{\small
+\begin{tabularx}{\linewidth}{@{}L{1.3cm} L{2.1cm} Y@{}}
+\toprule
+\textbf{Test} & \textbf{Holm p-value} & \textbf{Decision} \\
+\midrule
+1 & $1.3\times10^{-15}$ & reject $H_0$ \\
+2 & $9.8\times10^{-8}$ & reject $H_0$ \\
+3 & 0.81 & fail to reject $H_0$ \\
+4 & $6.5\times10^{-4}$ & reject $H_0$ \\
+\bottomrule
+\end{tabularx}}
+
+No primary decision changes after correction. The supporting checks help assess assumptions
+and interpretation, but use the same data and are not independent confirmations of the findings.
+
+%-----------------------------------------------------------------------
+\section{Limitations}
+
+\begin{itemize}
+  \item \textbf{No speed-limit column in our datatset}. In Great
+  Britain a road with street lighting defaults to 30\,mph, while an unlit rural single
+  carriageway defaults to 60\,mph. Thus, Part of the 3.5\pp\ gap in PS1 may be speed, not light, and
+  PS2 cannot be adjusted for speed either.
+  \item \textbf{Association, not cause.} Lights are not placed at random: they go on junctions
+  and built-up stretches. Only a before-and-after study of newly lit roads could show cause.
+  \item \textbf{Injury crashes only.} STATS19 records crashes with at least one injury that were
+  reported to police, so the KSI share is a share of injury crashes, and slight injuries are
+  under-reported.
+  \item \textbf{Districts kept.} Test 2 uses 247 of 396 districts; the 149 with fewer than 20
+  crashes in a group are left out, and the result may not apply to them.
+  \item \textbf{Shifted dates.} Without usable dates we cannot check seasonal confounding (dark
+  evenings in winter coincide with wet roads); the CMH check by road surface covers only part of
+  this.
+\end{itemize}
+
+\end{document}

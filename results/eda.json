@@ -1,0 +1,144 @@
+{
+  "ksi_by_light_pct": {
+    "Rural": {
+      "Daylight": 16.84,
+      "Lights lit": 17.86,
+      "No lighting": 23.78,
+      "Lights unlit": 18.83,
+      "Unknown": 15.6
+    },
+    "Urban": {
+      "Daylight": 11.73,
+      "Lights lit": 15.86,
+      "No lighting": 18.51,
+      "Lights unlit": 14.18,
+      "Unknown": 11.92
+    }
+  },
+  "ksi_by_area_pct": {
+    "Rural": 17.97,
+    "Urban": 12.8
+  },
+  "vehicle": {
+    "crashes": {
+      "Car/taxi": 518980,
+      "Van/goods": 58461,
+      "Motorcycle": 57027,
+      "Bus/minibus": 28283,
+      "Other": 7902
+    },
+    "share_pct": {
+      "Car/taxi": 77.38,
+      "Van/goods": 8.72,
+      "Motorcycle": 8.5,
+      "Bus/minibus": 4.22,
+      "Other": 1.18
+    },
+    "ksi_pct": {
+      "Car/taxi": 14.67,
+      "Van/goods": 14.73,
+      "Motorcycle": 14.67,
+      "Bus/minibus": 14.38,
+      "Other": 15.33
+    }
+  },
+  "casualty_dist_pct": {
+    "Car": {
+      "1": 74.15,
+      "2": 18.3,
+      "3": 4.92,
+      "4": 1.69,
+      "5+": 0.94
+    },
+    "Motorcycle": {
+      "1": 74.87,
+      "2": 18.04,
+      "3": 4.58,
+      "4": 1.63,
+      "5+": 0.88
+    }
+  },
+  "cramers_v_with_ksi": {
+    "Vehicle type": 0.0054,
+    "Road surface": 0.0215,
+    "Weather": 0.0303,
+    "Road type": 0.0533,
+    "Light": 0.0681,
+    "Urban/rural": 0.0702,
+    "No. of vehicles": 0.1263
+  },
+  "cramers_v_vehicle_type_with": {
+    "Urban_or_Rural_Area": 0.01244797332016456,
+    "Number_of_Vehicles": 0.007037710037291467,
+    "Light_Conditions": 0.004813825634013517,
+    "Road_Type": 0.00511261777649644,
+    "Accident_Severity": 0.004805447872088334
+  },
+  "vehicle_mix_pct_single_vs_multi": {
+    "multi": {
+      "Agricultural vehicle": 0.29,
+      "Bus or coach (17 or more pass seats)": 3.92,
+      "Car": 75.39,
+      "Goods 7.5 tonnes mgw and over": 2.62,
+      "Goods over 3.5t. and under 7.5t": 0.92,
+      "Minibus (8 - 16 passenger seats)": 0.29,
+      "Motorcycle 125cc and under": 2.29,
+      "Motorcycle 50cc and under": 1.16,
+      "Motorcycle over 125cc and up to 500cc": 1.15,
+      "Motorcycle over 500cc": 3.91,
+      "Other vehicle": 0.85,
+      "Pedal cycle": 0.03,
+      "Ridden horse": 0.0,
+      "Taxi/Private hire car": 2.01,
+      "Van / Goods 3.5 tonnes mgw or under": 5.16
+    },
+    "single": {
+      "Agricultural vehicle": 0.31,
+      "Bus or coach (17 or more pass seats)": 3.93,
+      "Car": 75.33,
+      "Goods 7.5 tonnes mgw and over": 2.61,
+      "Goods over 3.5t. and under 7.5t": 0.93,
+      "Minibus (8 - 16 passenger seats)": 0.32,
+      "Motorcycle 125cc and under": 2.36,
+      "Motorcycle 50cc and under": 1.14,
+      "Motorcycle over 125cc and up to 500cc": 1.17,
+      "Motorcycle over 500cc": 3.81,
+      "Other vehicle": 0.86,
+      "Pedal cycle": 0.03,
+      "Ridden horse": 0.0,
+      "Taxi/Private hire car": 2.01,
+      "Van / Goods 3.5 tonnes mgw or under": 5.2
+    }
+  },
+  "ksi_by_surface_pct": {
+    "Dry": 15.06,
+    "Flood over 3cm. deep": 17.17,
+    "Frost or ice": 11.9,
+    "Snow": 10.2,
+    "Unknown": 9.7,
+    "Wet or damp": 14.16
+  },
+  "ksi_by_weather_pct": {
+    "Fine + high winds": 16.61,
+    "Fine no high winds": 15.2,
+    "Fog or mist": 15.94,
+    "Other": 11.45,
+    "Raining + high winds": 14.67,
+    "Raining no high winds": 12.96,
+    "Snowing + high winds": 12.64,
+    "Snowing no high winds": 9.65,
+    "Unknown": 9.49
+  },
+  "casualties_summary": {
+    "count": 670660.0,
+    "mean": 1.357019950496526,
+    "std": 0.8247679189765676,
+    "min": 1.0,
+    "25%": 1.0,
+    "50%": 1.0,
+    "75%": 1.0,
+    "max": 68.0
+  },
+  "casualties_skew": 7.049145833784306,
+  "single_casualty_pct": 76.29290549607849
+}

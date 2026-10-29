@@ -1,0 +1,8 @@
+column,v
+Vehicle type,0.0054
+Road surface,0.0215
+Weather,0.0303
+Road type,0.0533
+Light,0.0681
+Urban/rural,0.0702
+No. of vehicles,0.1263

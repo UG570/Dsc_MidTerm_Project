@@ -1,0 +1,67 @@
+{
+  "raw_rows": 670679,
+  "raw_cols": 14,
+  "raw_cells": 9389506,
+  "clean_rows": 670660,
+  "encoded_cols": 52,
+  "encoded_cells": 34874320,
+  "raw_missing_cells": 19739,
+  "clean_missing_cells_in_used_cols": 0,
+  "onehot_levels": {
+    "Light_Conditions": 5,
+    "Road_Surface_Conditions": 6,
+    "Road_Type": 6,
+    "Urban_or_Rural_Area": 3,
+    "Weather_Conditions": 9,
+    "Vehicle_Type": 16
+  },
+  "severity_counts": {
+    "Slight": 572288,
+    "Serious": 89568,
+    "Fatal": 8804
+  },
+  "ksi_share": 0.14667939045119732,
+  "log": {
+    "exact_duplicates_dropped": 19,
+    "index_in_sci_notation": 239884,
+    "index_duplicates_raw": 239659,
+    "date_minus_id_year": {
+      "12": 420776,
+      "0": 10000
+    },
+    "district_levels_before": 422,
+    "district_typo_map": {
+      "Blaeu Gwent": "Blaenau Gwent",
+      "Crewe and ntwich": "Crewe and Nantwich",
+      "Stevege": "Stevenage",
+      "Clackmannshire": "Clackmannanshire",
+      "South Larkshire": "South Lanarkshire",
+      "North Larkshire": "North Lanarkshire"
+    },
+    "district_rows_fixed": 3438,
+    "district_levels_after": 416,
+    "missing_before": {
+      "Latitude": 25,
+      "Longitude": 26,
+      "Road_Surface_Conditions": 742,
+      "Road_Type": 4580,
+      "Urban_or_Rural_Area": 15,
+      "Weather_Conditions": 14351
+    },
+    "missing_coords_kept": 25,
+    "Number_of_Casualties_iqr": {
+      "q1": 1.0,
+      "q3": 1.0,
+      "upper_fence": 1.0,
+      "above_fence": 158994,
+      "max": 68
+    },
+    "Number_of_Vehicles_iqr": {
+      "q1": 1.0,
+      "q3": 2.0,
+      "upper_fence": 3.5,
+      "above_fence": 15310,
+      "max": 32
+    }
+  }
+}

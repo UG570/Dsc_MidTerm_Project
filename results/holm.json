@@ -1,0 +1,34 @@
+{
+  "Test 1": {
+    "p_raw": 3.179469445818457e-16,
+    "p_holm": 1.2717877783273829e-15,
+    "threshold": 0.0125,
+    "reject_holm": true,
+    "reject_raw": true,
+    "decision_changed": false
+  },
+  "Test 2": {
+    "p_raw": 3.2620397978824684e-08,
+    "p_holm": 9.786119393647406e-08,
+    "threshold": 0.016666666666666666,
+    "reject_holm": true,
+    "reject_raw": true,
+    "decision_changed": false
+  },
+  "Test 4": {
+    "p_raw": 0.0003233895315405629,
+    "p_holm": 0.0006467790630811258,
+    "threshold": 0.025,
+    "reject_holm": true,
+    "reject_raw": true,
+    "decision_changed": false
+  },
+  "Test 3": {
+    "p_raw": 0.8120573388164066,
+    "p_holm": 0.8120573388164066,
+    "threshold": 0.05,
+    "reject_holm": false,
+    "reject_raw": false,
+    "decision_changed": false
+  }
+}
